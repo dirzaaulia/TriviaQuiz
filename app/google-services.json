@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1050670909714",
+    "project_id": "trivia-quiz-546f1",
+    "storage_bucket": "trivia-quiz-546f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050670909714:android:398af177b53c27b02a4bcb",
+        "android_client_info": {
+          "package_name": "com.dirzaaulia.triviaquiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1050670909714-q5s3t9pl9u1kvi760857urs2a8d1rsiq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgJEQqDmaiJRpL5rBBrZLhBAjv8NMEhpw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1050670909714-q5s3t9pl9u1kvi760857urs2a8d1rsiq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
