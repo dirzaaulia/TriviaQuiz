@@ -1,5 +1,7 @@
 package com.dirzaaulia.triviaquiz.ui.trivia
 
+import androidx.annotation.MainThread
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dirzaaulia.triviaquiz.data.model.Questions
@@ -17,8 +19,17 @@ class TriviaViewModel @Inject constructor(
   private val repository: Repository
 ): ViewModel() {
 
+  val loading = mutableStateOf(true)
+
   private val _questions: MutableStateFlow<List<Questions>?> = MutableStateFlow(null)
   val questions = _questions.asStateFlow()
+
+  val currentQuestion = MutableStateFlow(0)
+
+  @MainThread
+  fun setCurrentQuestion(value: Int) {
+    currentQuestion.value = value
+  }
 
   fun getQuestions(
     numberOfQuestions: Int,
@@ -29,7 +40,15 @@ class TriviaViewModel @Inject constructor(
     repository.getQuestions(numberOfQuestions, category, difficulty, type)
       .onEach {
         it.success { data ->
+          data.results?.map { questions ->
+            val allAnswers = ArrayList<String>().apply {
+              add(questions.correctAnswer.toString())
+              questions.incorrectAnswer?.let { list -> addAll(list) }
+            }
+            questions.allAnswer = allAnswers.shuffled()
+          }
           _questions.value = data.results
+          loading.value = false
         }
       }
       .launchIn(viewModelScope)

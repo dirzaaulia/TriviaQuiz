@@ -3,6 +3,7 @@ package com.dirzaaulia.triviaquiz.ui.home
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -48,7 +49,6 @@ fun Home(
   CommonLoading(visibility = loading)
   AnimatedVisibility(visible = !loading) {
     Scaffold(
-      backgroundColor = MaterialTheme.colors.primarySurface,
       topBar = {
         HomeTopBar()
       }
@@ -106,215 +106,220 @@ fun HomeContent(
   else
     Icons.Filled.ArrowDropDown
 
-  Column(
-    modifier = modifier
-      .padding(vertical = 8.dp, horizontal = 24.dp)
-      .fillMaxSize()
+  Scaffold(
+    backgroundColor = MaterialTheme.colors.primarySurface,
   ) {
-    Text(
-      text = "Welcome to Trivia Quiz!",
-      style = MaterialTheme.typography.h6,
-      color = MaterialTheme.colors.onSurface
-    )
-    Text(
-      text = "You can customize your own Trivia Quiz setting below or you can randomize the quiz.",
-      style = MaterialTheme.typography.subtitle1,
-      color = MaterialTheme.colors.onSurface
-    )
-    OutlinedTextField(
-      value = numberOfQuestions.toString(),
-      onValueChange = { value ->
-        numberOfQuestions = if (value.isEmpty() || value == "0") {
-          1
-        } else {
-          value.filter { it.isDigit() }.toInt()
-        }
-      },
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 16.dp),
-      textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-      label = {
-        Text(
-          text = "Number Of Questions",
-          color = MaterialTheme.colors.onSurface
-        )
-      },
-      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-    )
-    OutlinedTextField(
-      value = categoryQuery,
-      onValueChange = { categoryQuery = it },
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 8.dp)
-        .onGloballyPositioned { coordinates ->
-          categoryFieldSize = coordinates.size.toSize()
-        },
-      textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-      label = {
-        Text(
-          text = "Category",
-          color = MaterialTheme.colors.onSurface
-        )
-      },
-      trailingIcon = {
-        Icon(
-          imageVector = categoryIcon,
-          contentDescription = null,
-          modifier = Modifier.clickable { categoryExpanded = !categoryExpanded }
-        )
-      },
-      readOnly = true
-    )
-    DropdownMenu(
-      expanded = categoryExpanded,
-      onDismissRequest = { categoryExpanded = false },
-      modifier = Modifier
-        .width(with(LocalDensity.current) { categoryFieldSize.width.toDp() })
-    ) {
-      category?.forEachIndexed { index, item ->
-        DropdownMenuItem(
-          onClick = {
-            categoryIndex = index + 1
-            categoryQuery = item.name.toString()
-            categoryExpanded = false
-            viewModel.setSelectedCategory(categoryIndex)
-          }
-        ) {
-          Text(text = item.name.toString())
-        }
-      }
-    }
-    Box {
-      OutlinedTextField(
-        value = difficultyQuery,
-        onValueChange = { difficultyQuery = it },
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 8.dp)
-          .onGloballyPositioned { coordinates ->
-            difficultyFieldSize = coordinates.size.toSize()
-          },
-        textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-        label = {
-          Text(
-            text = "Difficulty",
-            color = MaterialTheme.colors.onSurface
-          )
-        },
-        trailingIcon = {
-          Icon(
-            imageVector = difficultyIcon,
-            contentDescription = null,
-            modifier = Modifier.clickable { difficultyExpanded = !difficultyExpanded }
-          )
-        },
-        readOnly = true
-      )
-      DropdownMenu(
-        expanded = difficultyExpanded,
-        onDismissRequest = { difficultyExpanded = false },
-        modifier = Modifier
-          .width(with(LocalDensity.current) { difficultyFieldSize.width.toDp() })
-      ) {
-        difficulty.forEachIndexed { index, item ->
-          DropdownMenuItem(
-            onClick = {
-              difficultyIndex = index + 1
-              difficultyQuery = item
-              difficultyExpanded = false
-              viewModel.setSelectedDifficulty(difficultyQuery)
-            }
-          ) {
-            Text(text = item)
-          }
-        }
-      }
-    }
-    Box {
-      OutlinedTextField(
-        value = typeQuery,
-        onValueChange = { typeQuery = it },
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 8.dp)
-          .onGloballyPositioned { coordinates ->
-            typeFieldSize = coordinates.size.toSize()
-          },
-        textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-        label = {
-          Text(
-            text = "Difficulty",
-            color = MaterialTheme.colors.onSurface
-          )
-        },
-        trailingIcon = {
-          Icon(
-            imageVector = typeIcon,
-            contentDescription = null,
-            modifier = Modifier.clickable { typeExpanded = !typeExpanded }
-          )
-        },
-        readOnly = true
-      )
-      DropdownMenu(
-        expanded = typeExpanded,
-        onDismissRequest = { typeExpanded = false },
-        modifier = Modifier
-          .width(with(LocalDensity.current) { typeFieldSize.width.toDp() })
-      ) {
-        difficulty.forEachIndexed { index, item ->
-          DropdownMenuItem(
-            onClick = {
-              typeIndex = index + 1
-              typeQuery = item
-              typeExpanded = false
-              viewModel.setSelectedType(typeQuery)
-            }
-          ) {
-            Text(text = item)
-          }
-        }
-      }
-    }
-    OutlinedButton(
-      modifier = Modifier
-        .padding(top = 8.dp)
-        .fillMaxWidth(),
-      onClick = {
-        if (categoryIndex == 0) {
-          val tempCategory = category?.toMutableList()
-          tempCategory?.removeAt(0)
-          categoryIndex = tempCategory?.random()?.id!!
-        }
-
-        if (difficultyIndex == 0) {
-          val tempDifficulty = difficulty.toMutableList()
-          tempDifficulty.removeAt(0)
-          difficultyQuery = tempDifficulty.random().lowercase()
-        }
-
-        if (typeIndex == 0) {
-          val tempType = type.toMutableList()
-          tempType.removeAt(0)
-          typeQuery = tempType.random()
-
-          typeQuery = if (typeQuery.equals("True / False", true)) {
-            "boolean"
-          } else {
-            "multiple"
-          }
-        }
-
-        navigateToTrivia(numberOfQuestions, categoryIndex, difficultyQuery, typeQuery)
-      },
+    Column(
+      modifier = modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colors.background)
+        .padding(vertical = 8.dp, horizontal = 24.dp)
     ) {
       Text(
-        style = MaterialTheme.typography.button,
-        color = MaterialTheme.colors.onSurface,
-        text = "Create Trivia Quiz"
+        text = "Welcome to Trivia Quiz!",
+        style = MaterialTheme.typography.h6,
+        color = MaterialTheme.colors.onSurface
       )
+      Text(
+        text = "You can customize your own Trivia Quiz setting below or you can randomize the quiz.",
+        style = MaterialTheme.typography.subtitle1,
+        color = MaterialTheme.colors.onSurface
+      )
+      OutlinedTextField(
+        value = numberOfQuestions.toString(),
+        onValueChange = { value ->
+          numberOfQuestions = if (value.isEmpty() || value == "0") {
+            1
+          } else {
+            value.filter { it.isDigit() }.toInt()
+          }
+        },
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = 16.dp),
+        textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+        label = {
+          Text(
+            text = "Number Of Questions",
+            color = MaterialTheme.colors.onSurface
+          )
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+      )
+      OutlinedTextField(
+        value = categoryQuery,
+        onValueChange = { categoryQuery = it },
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = 8.dp)
+          .onGloballyPositioned { coordinates ->
+            categoryFieldSize = coordinates.size.toSize()
+          },
+        textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+        label = {
+          Text(
+            text = "Category",
+            color = MaterialTheme.colors.onSurface
+          )
+        },
+        trailingIcon = {
+          Icon(
+            imageVector = categoryIcon,
+            contentDescription = null,
+            modifier = Modifier.clickable { categoryExpanded = !categoryExpanded }
+          )
+        },
+        readOnly = true
+      )
+      DropdownMenu(
+        expanded = categoryExpanded,
+        onDismissRequest = { categoryExpanded = false },
+        modifier = Modifier
+          .width(with(LocalDensity.current) { categoryFieldSize.width.toDp() })
+      ) {
+        category?.forEachIndexed { index, item ->
+          DropdownMenuItem(
+            onClick = {
+              categoryIndex = index + 1
+              categoryQuery = item.name.toString()
+              categoryExpanded = false
+              viewModel.setSelectedCategory(categoryIndex)
+            }
+          ) {
+            Text(text = item.name.toString())
+          }
+        }
+      }
+      Box {
+        OutlinedTextField(
+          value = difficultyQuery,
+          onValueChange = { difficultyQuery = it },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+            .onGloballyPositioned { coordinates ->
+              difficultyFieldSize = coordinates.size.toSize()
+            },
+          textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+          label = {
+            Text(
+              text = "Difficulty",
+              color = MaterialTheme.colors.onSurface
+            )
+          },
+          trailingIcon = {
+            Icon(
+              imageVector = difficultyIcon,
+              contentDescription = null,
+              modifier = Modifier.clickable { difficultyExpanded = !difficultyExpanded }
+            )
+          },
+          readOnly = true
+        )
+        DropdownMenu(
+          expanded = difficultyExpanded,
+          onDismissRequest = { difficultyExpanded = false },
+          modifier = Modifier
+            .width(with(LocalDensity.current) { difficultyFieldSize.width.toDp() })
+        ) {
+          difficulty.forEachIndexed { index, item ->
+            DropdownMenuItem(
+              onClick = {
+                difficultyIndex = index + 1
+                difficultyQuery = item
+                difficultyExpanded = false
+                viewModel.setSelectedDifficulty(difficultyQuery)
+              }
+            ) {
+              Text(text = item)
+            }
+          }
+        }
+      }
+      Box {
+        OutlinedTextField(
+          value = typeQuery,
+          onValueChange = { typeQuery = it },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+            .onGloballyPositioned { coordinates ->
+              typeFieldSize = coordinates.size.toSize()
+            },
+          textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+          label = {
+            Text(
+              text = "Difficulty",
+              color = MaterialTheme.colors.onSurface
+            )
+          },
+          trailingIcon = {
+            Icon(
+              imageVector = typeIcon,
+              contentDescription = null,
+              modifier = Modifier.clickable { typeExpanded = !typeExpanded }
+            )
+          },
+          readOnly = true
+        )
+        DropdownMenu(
+          expanded = typeExpanded,
+          onDismissRequest = { typeExpanded = false },
+          modifier = Modifier
+            .width(with(LocalDensity.current) { typeFieldSize.width.toDp() })
+        ) {
+          difficulty.forEachIndexed { index, item ->
+            DropdownMenuItem(
+              onClick = {
+                typeIndex = index + 1
+                typeQuery = item
+                typeExpanded = false
+                viewModel.setSelectedType(typeQuery)
+              }
+            ) {
+              Text(text = item)
+            }
+          }
+        }
+      }
+      OutlinedButton(
+        modifier = Modifier
+          .padding(top = 8.dp)
+          .fillMaxWidth(),
+        onClick = {
+          if (categoryIndex == 0) {
+            val tempCategory = category?.toMutableList()
+            tempCategory?.removeAt(0)
+            categoryIndex = tempCategory?.random()?.id!!
+          }
+
+          if (difficultyIndex == 0) {
+            val tempDifficulty = difficulty.toMutableList()
+            tempDifficulty.removeAt(0)
+            difficultyQuery = tempDifficulty.random().lowercase()
+          }
+
+          if (typeIndex == 0) {
+            val tempType = type.toMutableList()
+            tempType.removeAt(0)
+            typeQuery = tempType.random()
+
+            typeQuery = if (typeQuery.equals("True / False", true)) {
+              "boolean"
+            } else {
+              "multiple"
+            }
+          }
+
+          navigateToTrivia(numberOfQuestions, categoryIndex, difficultyQuery, typeQuery)
+        },
+      ) {
+        Text(
+          style = MaterialTheme.typography.button,
+          color = MaterialTheme.colors.onSurface,
+          text = "Create Trivia Quiz"
+        )
+      }
     }
   }
 }
@@ -322,13 +327,13 @@ fun HomeContent(
 @Composable
 fun HomeTopBar() {
   TopAppBar(
-    backgroundColor = MaterialTheme.colors.primarySurface,
     modifier = Modifier
       .statusBarsPadding()
       .wrapContentHeight()
   ) {
     Row(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier
+        .fillMaxWidth(),
       horizontalArrangement = Arrangement.Center
     ) {
       Image(

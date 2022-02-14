@@ -4,7 +4,11 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val LightElevation = Elevations()
 
@@ -49,6 +53,7 @@ fun TriviaQuizTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
   content: @Composable() () -> Unit
 ) {
+
   val colors = if (darkTheme) {
     DarkColorPalette
   } else {
@@ -67,6 +72,17 @@ fun TriviaQuizTheme(
       typography = typography,
       shapes = shapes,
       content = content
+    )
+  }
+
+  val systemUiController = rememberSystemUiController()
+  if (darkTheme) {
+    systemUiController.setSystemBarsColor(
+      color = Color.Transparent
+    )
+  } else {
+    systemUiController.setSystemBarsColor(
+      color = colors.primary
     )
   }
 }
